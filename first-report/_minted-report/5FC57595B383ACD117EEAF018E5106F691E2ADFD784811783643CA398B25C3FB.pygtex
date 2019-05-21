@@ -1,0 +1,9 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{;; if\PYGZhy{}not function}
+\PYG{p}{(}\PYG{k+kd}{defn }\PYG{n+nv}{my\PYGZhy{}if\PYGZhy{}not\PYGZhy{}func} \PYG{p}{[}\PYG{n+nv}{form} \PYG{n+nv}{then} \PYG{n+nv}{else}\PYG{p}{]}
+  \PYG{p}{(}\PYG{k}{if }\PYG{p}{(}\PYG{n+nb}{not }\PYG{n+nv}{form}\PYG{p}{)} \PYG{n+nv}{then} \PYG{n+nv}{else}\PYG{p}{))}
+
+\PYG{c+c1}{;; if\PYGZhy{}not macro}
+\PYG{p}{(}\PYG{k+kd}{defmacro }\PYG{n+nv}{my\PYGZhy{}if\PYGZhy{}not\PYGZhy{}macro} \PYG{p}{[}\PYG{n+nv}{form} \PYG{n+nv}{then} \PYG{n+nv}{else}\PYG{p}{]}
+  \PYG{p}{(}\PYG{n+nb}{list }\PYG{l+s+ss}{\PYGZsq{}if} \PYG{p}{(}\PYG{n+nb}{list }\PYG{l+s+ss}{\PYGZsq{}not} \PYG{n+nv}{form}\PYG{p}{)} \PYG{n+nv}{then} \PYG{n+nv}{else}\PYG{p}{))}
+\end{Verbatim}

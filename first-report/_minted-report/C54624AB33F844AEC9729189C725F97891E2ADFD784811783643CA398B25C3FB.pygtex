@@ -1,0 +1,10 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{p}{(}\PYG{n+nf}{macroexpand}
+\PYG{o}{\PYGZsq{}}\PYG{p}{(}\PYG{n+nf}{\PYGZhy{}\PYGZgt{}\PYGZgt{}} \PYG{n+nv}{x}
+      \PYG{n+nv}{Math/abs}
+      \PYG{n+nv}{Math/log}
+      \PYG{n+nv}{square}
+      \PYG{p}{(}\PYG{n+nb}{* }\PYG{l+m+mi}{3}\PYG{p}{)}
+      \PYG{p}{(}\PYG{n+nb}{array\PYGZhy{}map }\PYG{l+s+ss}{:value}\PYG{p}{)))}
+\PYG{c+c1}{;; =\PYGZgt{} (array\PYGZhy{}map :value (* 3 (square (Math/log (Math/abs x)))))}
+\end{Verbatim}

@@ -1,0 +1,7 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+ \PYG{k}{case} \PYG{k}{class} \PYG{n+nc}{Record}\PYG{o}{(}
+   \PYG{n}{fields}\PYG{k}{:} \PYG{k+kt}{Vector}\PYG{o}{[}\PYG{k+kt}{Rep}\PYG{o}{[}\PYG{k+kt}{String}\PYG{o}{]],} \PYG{n}{schema}\PYG{k}{:} \PYG{k+kt}{Vector}\PYG{o}{[}\PYG{k+kt}{String}\PYG{o}{])} \PYG{o}{\PYGZob{}}
+ \PYG{k}{def} \PYG{n}{apply}\PYG{o}{(}\PYG{n}{name}\PYG{k}{:} \PYG{k+kt}{String}\PYG{o}{)}\PYG{k}{:} \PYG{k+kt}{Rep}\PYG{o}{[}\PYG{k+kt}{String}\PYG{o}{]} \PYG{k}{=}
+     \PYG{n}{fields}\PYG{o}{(}\PYG{n}{schema} \PYG{n}{indexOf} \PYG{n}{name}\PYG{o}{)}
+\PYG{o}{\PYGZcb{}}
+\end{Verbatim}

@@ -1,0 +1,15 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{;; *clojure\PYGZhy{}version*}
+\PYG{c+c1}{;; =\PYGZgt{} \PYGZob{}:major 1, :minor 10, :incremental 0, :qualifier nil\PYGZcb{}}
+\PYG{p}{(}\PYG{k+kd}{defn }\PYG{n+nv}{transform\PYGZhy{}list\PYGZhy{}v2} \PYG{p}{[}\PYG{n+nv}{l}\PYG{p}{]}
+  \PYG{p}{(}\PYG{k}{let }\PYG{p}{[}\PYG{n+nv}{square} \PYG{p}{(}\PYG{k}{fn }\PYG{p}{[}\PYG{n+nv}{x}\PYG{p}{]} \PYG{p}{(}\PYG{n+nb}{* }\PYG{n+nv}{x} \PYG{n+nv}{x}\PYG{p}{))}
+        \PYG{n+nv}{do\PYGZhy{}element} \PYG{p}{(}\PYG{k}{fn }\PYG{p}{[}\PYG{n+nv}{x}\PYG{p}{]}
+                    \PYG{p}{(}\PYG{n+nf}{\PYGZhy{}\PYGZgt{}\PYGZgt{}} \PYG{n+nv}{x}
+                        \PYG{n+nv}{Math/abs}
+                        \PYG{n+nv}{Math/log}
+                        \PYG{n+nv}{square}
+                        \PYG{p}{(}\PYG{n+nb}{* }\PYG{l+m+mi}{3}\PYG{p}{)}
+                        \PYG{p}{(}\PYG{n+nb}{array\PYGZhy{}map }\PYG{l+s+ss}{:value}\PYG{p}{)))]}
+    \PYG{p}{(}\PYG{n+nb}{map }\PYG{n+nv}{do\PYGZhy{}element} \PYG{n+nv}{l}\PYG{p}{)))}
+\PYG{p}{(}\PYG{n+nf}{transform\PYGZhy{}list\PYGZhy{}v2} \PYG{p}{[}\PYG{l+m+mi}{1} \PYG{l+m+mi}{2} \PYG{l+m+mi}{3} \PYG{l+m+mi}{4} \PYG{l+m+mi}{5} \PYG{l+m+mi}{6} \PYG{l+m+mi}{7} \PYG{l+m+mi}{8} \PYG{l+m+mi}{9} \PYG{l+m+mi}{10}\PYG{p}{])}
+\end{Verbatim}

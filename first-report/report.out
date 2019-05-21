@@ -1,0 +1,5 @@
+%このファイルは日本語文字を含みます.
+\BOOKMARK [1][-]{section.1}{Functional Pearl: A SQL to C Compiler in 500 Lines of Code}{}% 1
+\BOOKMARK [1][-]{section.2}{「プログラムによってプログラムを生成する」考えが有効に活用できる場面を説明せよ}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Threading macro}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Lispのマクロについて}{section.2}% 4

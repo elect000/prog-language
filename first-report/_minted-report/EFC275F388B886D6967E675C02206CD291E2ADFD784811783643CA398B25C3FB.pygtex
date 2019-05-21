@@ -1,0 +1,10 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{;;(my\PYGZhy{}if\PYGZhy{}not\PYGZhy{}func (zero? 1) (println \PYGZdq{}not zero\PYGZdq{}) (println (/ 1 0)))}
+\PYG{c+c1}{;; =\PYGZgt{} not zero}
+\PYG{c+c1}{;; =\PYGZgt{} class java.lang.ArithmeticExceptionclass}
+\PYG{c+c1}{;;     java.lang.ArithmeticExceptionArithmeticException}
+\PYG{c+c1}{;;         Divide by zero  clojure.lang.Numbers.divide}
+\PYG{c+c1}{;;             (Numbers.java:158)}
+\PYG{p}{(}\PYG{n+nf}{my\PYGZhy{}if\PYGZhy{}not\PYGZhy{}macro} \PYG{p}{(}\PYG{n+nb}{zero? }\PYG{l+m+mi}{1}\PYG{p}{)} \PYG{p}{(}\PYG{n+nb}{println }\PYG{l+s}{\PYGZdq{}not zero\PYGZdq{}}\PYG{p}{)} \PYG{p}{(}\PYG{n+nb}{println }\PYG{p}{(}\PYG{n+nb}{/ }\PYG{l+m+mi}{1} \PYG{l+m+mi}{0}\PYG{p}{)))}
+\PYG{c+c1}{;; =\PYGZgt{} not zero}
+\end{Verbatim}

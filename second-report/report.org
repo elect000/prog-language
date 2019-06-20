@@ -1,0 +1,167 @@
+#+TITLE: プログラム言語特論 後半レポート
+#+AUTHOR: コンピュータサイエンス専攻 江畑 拓哉(201920631)
+# This is a Bibtex reference
+#+OPTIONS: ':nil *:t -:t ::t <:t H:3 \n:t arch:headline ^:nil
+#+OPTIONS: author:t broken-links:nil c:nil creator:nil
+#+OPTIONS: d:(not "LOGBOOK") date:nil e:nil email:nil f:t inline:t num:t
+#+OPTIONS: p:nil pri:nil prop:nil stat:t tags:t tasks:t tex:t
+#+OPTIONS: timestamp:nil title:t toc:nil todo:t |:t
+#+LANGUAGE: ja
+#+SELECT_TAGS: export
+#+EXCLUDE_TAGS: noexport
+#+CREATOR: Emacs 26.2 (Org mode 9.2.3)
+#+LATEX_CLASS: extarticle
+#+LATEX_CLASS_OPTIONS: [a4paper, dvipdfmx, twocolumn, 8pt]
+#+LATEX_HEADER: \usepackage{amsmath, amssymb, bm}
+#+LATEX_HEADER: \usepackage{graphics}
+#+LATEX_HEADER: \usepackage{color}
+#+LATEX_HEADER: \usepackage{times}
+#+LATEX_HEADER: \usepackage{longtable}
+#+LATEX_HEADER: \usepackage{minted}
+#+LATEX_HEADER: \usepackage{fancyvrb}
+#+LATEX_HEADER: \usepackage{indentfirst}
+#+LATEX_HEADER: \usepackage{pxjahyper}
+#+LATEX_HEADER: \usepackage[utf8]{inputenc}
+#+LATEX_HEADER: \usepackage[backend=biber, bibencoding=utf8, style=authoryear]{biblatex}
+#+LATEX_HEADER: \usepackage[top=5truemm, bottom=5truemm, left=5truemm, right=5truemm]{geometry}
+#+LATEX_HEADER: \usepackage{ascmac}
+#+LATEX_HEADER: \usepackage{algorithm}
+#+LATEX_HEADER: \usepackage{algorithmic}
+#+LATEX_HEADER: \addbibresource{reference.bib}
+#+DESCRIPTION:
+#+KEYWORDS:
+#+STARTUP: indent overview inlineimages
+* Summary of ''Constraint Solving for Program Verification Theory and Practice by Example"
+  プログラム検証はプログラムの振る舞い(program behavior) の様々な側面から記述される補助アサーション(auxiliary assertions)の構築に依存している。補助アサーションの例としては、帰納的不変式 (inductive invariants)、資源境界(resource bounds)、到達可能なプログラムの状態を特徴づけるための内挿(interpolants for characterizing reachable program states)、プログラムの終了までの実行ステップ数を近似するためのランキング関数 (ranking functions for approximating number of execution steps until program termination)、非終了(non-termination)性を証明するための再帰集合(recurrence sets)などが上げられる。昨今の制約ソルバ(constraint solving tools) はプログラム検証を効率的に自動化することを助ける。この論文では、基本的な計算機(Computer Machinery)として制約ソルバ(constraint solvers)を利用することで上述したような補助アサーションの自動構築のためのアルゴリズムを例とともに示していく。
+  
+  プログラム検証では一般に制約ベースのアルゴリズムを用いられてきた。このアルゴリズムは2つの主要なステップに分かれており、第一ステップは制約を生成するステップで、関心のあるプログラムの特性を制約の集合として定式化し、第二ステップではそれらの制約を解決するステップとなっている。一般的に第二ステップは制約ソルバ手続きの分離(separation of constraint solving procedure)を用いて実行されている。これによって、問題ごとに専用のプログラム検証ツールを作ることなく、既存の制約ソルバを用いることができる。この論文では、ランキング関数、内挿、不変量、資源境界、再起集合を生成することで制約を用いてプログラムの(非)終了性、安全性を証明する方法を例を用いて示していく。
+
+  この論文で例として用いられているプログラムと、そのcontrol-flowグラフ、そして対応遷移関係(corresponding transition relations)を引用する。
+  #+ATTR_LATEX: :width 10cm
+  #+CAPTION: Fig. 1. Constraint Solving for Program Verification Theory and Practice by Example より引用
+  [[./Fig1.png]]
+
+  このプログラムにおいては問題の簡潔化のため、プログラム内の整数の変数を有理数で近似している。これによって $\rho_2$  はガード (guard) $x+1 \leq y$ を持つ。また assert 文の失敗は control location $l_5$ への到達を以て表現される。
+
+* 線形ランキング関数(linear ranking functions)
+  プログラムの終了性を証明するためには、実行ステップ数を過大評価するランキング関数を構築しなければならない。線形ランキング関数は、プログラム変数に対する線形アサーションによってこの近似を行う。
+
+  例としてFigure 1.  の loop 関数の部分を特に注目する。
+  ループ内には単純な要素のみが含まれているため、制約ベースのランキング関数生成の主要概念を強調することができる。終了を証明するプログラム変数上の線形式(linear expression) を探索する。プログラム中の変数  $x, y$ に関する係数を $fx, fy$ とする($z$ はこの部分では登場しないため省略する)。このループでステップを踏むことができるすべての状態において、値に下限 $\delta_0$ が設けられており、その値がある一定の正の固定量 $\delta$ だけ減少しているならば、これを示す線形式はランキング関数とみなすことができる。以上の値を用いて次の制約を定義できる。
+  
+  \begin{eqnarray}
+  \exists f_x \exists f_y \exists \delta_0 \exists \delta & \nonumber \\
+  \forall x \forall y \forall x' \forall y' : & \nonumber \\
+  (\rho \geq 1 \land & \nonumber\\
+  \rho_2 \rightarrow (& f_x x + f_y y \geq \delta_0 \land \nonumber \\
+  & f_x x' + f_y y' \geq f_x x + f_y y - \delta& )
+  \end{eqnarray}
+  つまり $f_x, f_y, \delta_0, \delta$ にある満足な割当を行うことで、この loop 関数の線形ランキング関数を決定できる。制約条件 (1) は、$x, y, x', y'$ への普遍的な定量化 $\forall$ を含み、それは既存の制約ソルバを用いた解決を困難にしている。よって $\forall$ を排除するために以下の手続きを踏んでいく。
+  
+  まず制約生成のために遷移関係を行列形式に落とし込む。尚このために等式を不等式の形に変形している。
+  \begin{eqnarray*}
+  \rho_2 &=& (x + 1 \leq x' =  x+ 1 \land y' = y) \nonumber \\
+   &=& (x - y \leq -1 \land -x + x' \leq 1 \land \nonumber \\ && x - x' \leq -1  \land -y + y' \leq 0 y - y' \leq 0)  \nonumber \\ 
+   &=& 
+\begin{pmatrix}
+    1 & -1 & 0 & 0 \\
+    -1 & 0 & 1 & 0 \\
+    0 & -1 &0 & 1 \\
+    0 & 1 &0 &-1
+   \end{pmatrix}
+\begin{pmatrix}
+x \\ y \\ x' \\ y'
+\end{pmatrix} \leq 
+\begin{pmatrix}
+-1 \\
+1\\
+-1 \\
+0 \\
+0
+\end{pmatrix}
+  \end{eqnarray*}
+
+  また (1) の下界と減少に関する条件は以下の行列形式に落とし込める。
+  \begin{eqnarray*}
+  f_x x + f_y y \geq \delta_0 = \begin{pmatrix} - f_x & - f_y & 0& 0  \end{pmatrix}\begin{pmatrix}  x \\ y \\ x' \\ y'  \end{pmatrix} \leq - \delta_0  \\
+f_x x' + f_y y' \leq f_x x + f_y y - \delta =  \begin{pmatrix}-f_x & -f_y & f_x & f_y\end{pmatrix} \begin{pmatrix} x \\ y \\ x' \\ y' \end{pmatrix} \leq - \delta 
+  \end{eqnarray*}
+  
+  これに以下で示される Farkas の補題 (Farkas' Lemma) を適用して $\forall$ を排除していく。
+  \begin{eqnarray*}
+  \exists x : A x \leq b \rightarrow ((\forall x : Ax \leq b \rightarrow cx \leq \gamma) \leftrightarrow (\exists \lambda : \lambda \geq 0 \land \lambda A = c \land \lambda b \leq \gamma))
+  \end{eqnarray*}
+  Farkas の補題より、ある満足した $x$ についての式(左辺)から以下の実質等値な関係(右辺)を導き出すことができ($c=0,  \gamma = -1$)、これを (1)  に適用することで (2) のような $\forall$ を排除した制約を得ることができる。
+  \begin{eqnarray*}
+  (\forall x : \lnot (A x \leq b)) \leftrightarrow (\exists \lambda : \lambda \leq 0 \land \lambda A = 0 \land \lambda b \leq -1)
+  \end{eqnarray*}
+  
+  \begin{eqnarray}
+  \exists f_x \exists f_y \exists \delta_0 \exists \delta & \nonumber  \\
+  \exists \lambda \exists \mu : & \nonumber \\
+   \delta \geq 1 &\land & \nonumber \\
+  \lambda \geq 0 &\land & \nonumber \\
+  \mu \geq 0 &\land  & \nonumber \\
+ \lambda \begin{pmatrix} 1 & -1 & 0 & 0 \\ -1 & 0 & 1 & 0 \\ 1 & 0 & -1 & 0 \\ 0 & -1 & 0 & 1 \\ 0 & 1 & 0 & -1 \end{pmatrix} 
+&=& \begin{pmatrix} -f_x & -f_y & 0 & 0 \end{pmatrix} \land \lambda \begin{pmatrix} -1 \\ 1 \\ -1 \\ 0 \\ 0 \end{pmatrix} \leq - \delta_0 \land \nonumber \\ 
+ \mu \begin{pmatrix} 1 & -1 & 0 & 0 \\ -1 & 0 & 1 & 0 \\ 1 & 0 & -1 & 0 \\ 0 & -1 & 0 & 1 \\ 0 & 1 & 0 & -1 \end{pmatrix} 
+&=& \begin{pmatrix} -f_x & -f_y & f_x & f_y \end{pmatrix} \land \mu \begin{pmatrix} -1 \\ 1 \\ -1 \\ 0 \\ 0 \end{pmatrix} \leq - \delta  \nonumber \\ &&
+  \end{eqnarray}
+
+  この制約では $\exists$ の有利変数のみを含み線形(不)等式からなりたっている。したがって、これは既存のツールで解決できる有理数上の線形計画法の問題として扱うことができるようになった。
+  
+  これを後述するアルゴリズムを用いて解くと以下の結果が得られる。
+  \begin{eqnarray*}
+  \lambda &=& \begin{pmatrix}1 & 0 & 0 & 0 & 0 \end{pmatrix}\\
+  \mu &=& \begin{pmatrix}0 & 0 & 1 & 1 & 0 \end{pmatrix}\\
+  f_x &=& -1 \\
+  f_y  &=& 1\\
+  \delta_0 &=& 1\\
+  \delta &=& 1
+  \end{eqnarray*}
+  これを解釈すると、各イテレーションで $-x + y$ が 少なくとも 1 ずつ減少すること、 ループガード(loop guard)を満たすすべてのイテレーションの状態で $-x + y$  は1以上であることが示されている。
+  
+  尚 $v$ をプログラムの変数に対する線形不等式の集合として、状態遷移を $\rho(v, v')$  として表すと以下の式が成り立つ。
+  \begin{eqnarray*}
+\rho(v, v') = R \begin{pmatrix} v \\ v'\end{pmatrix} \leq r
+\end{eqnarray*}
+そして $v$ の係数 $f$ のベクトルが線形ランキング関数を定義する条件は以下の制約によって表される。
+\begin{eqnarray}
+  \exists f \exists \delta_0 \exists \delta \forall v \forall v' :  \delta \geq 1 \land \rho (v ,v') \rightarrow (f v \geq \delta_0 \land fv' \leq - \delta)
+\end{eqnarray}
+
+(3) へFarkas の補題を適用すると $\exists$ のみの式 ((2) と参照)として再構築することができる。
+\begin{eqnarray}
+  \exists f \exists \delta_0 \exists \delta &&\nonumber \\ 
+  \exists \lambda \exists \mu &:& \nonumber \\
+  \delta &\geq& 1 \land \nonumber \\
+    \lambda &\geq& 0 \land \mu \geq 0 \land \nonumber \\
+    \lambda R  &=& \begin{pmatrix} -f & 0\end{pmatrix} \land \lambda r \leq - \delta_0\nonumber \\
+\mu R &=& \begin{pmatrix} -f & f\end{pmatrix} \land \mu r \leq - \delta 
+\end{eqnarray} 
+
+* (制約付き)線形内挿の計算手法 (how to compute (Constrained) linear interpolants)
+  内挿(Interpolants) はある望ましい性質を持つプログラムの状態とその性質に違反するプログラムの状態と区別することができるプログラムの状態に関する論理的なアサーションである。
+  
+  内挿はプログラムの状態の集合を自動的に抽象化する際に重要な役割を担っており、プログラム検証ツールにとって非常に重要な構成要素である。以下に線形内挿の計算手法についてのアルゴリズムをFigure 1.  の例を用いて示す。この特徴として、追加の制約を用いることで結果にバイアスをかける可能性があるという点を挙げることができる。
+  
+  プログラム検証において内挿は、プログラムのパスから抽出された式、言い換えるとプログラムの control flow グラフに従うプログラムの状態のシーケンスから計算される。
+  
+  ループに入らずに assert の状態を失敗するプログラムの実行に対応するパス $\tau_1, \tau_3, \tau_5$ について考えたとき、この場合の変数の値は変更されず、一連の条件 $y\geq z \land x \geq y \land x  + 1 \leq z$ が課されている。このシーケンスは望ましいものではなく、プログラム検証では、プログラムの状態を $\tau_3$ を取ったあとの状態を分離するための内挿クエリを発行する。
+  形式的には、内挿と呼ばれる $i_x x + i_y y + i_z z \leq i_0$ という不等式について考える。
+  
+  \begin{eqnarray}
+  \exists i_x \exists i_y \exists i_z \exists i_0 && \nonumber \\
+  \forall x \forall y \forall z &:& \nonumber \\
+  ((y\geq z \land x\geq y )&\rightarrow& i_x x + i_y y + i_z z \leq i_0) \land \nonumber \\
+  ((i_x x + i_y y + i_z z \leq i_0 \land x +1 \leq z ) &\rightarrow& 0 \leq -1)) 
+  \end{eqnarray}
+
+  $i_x x + i_y y + i_z z  \leq i_0$ は $y\geq z \land x \geq y$ と$x + 1 \leq z$ の両方に登場する変数を参照している必要があり、すなわち $i_y$ は 0 である必要がある(論文中では $i_z$ となっていたが誤植と思われる see. p-6)。
+
+* 線形不変生成(linear invariants generation) とプログラムテストケースを活用する最適化手法
+
+* プログラムの非終了性判定(とそのための再帰集合の構築)法
+
+* 線形アサーション合成のための制約ベースのアルゴリズムの、線形算術関数と未解釈関数の組み合わせを処理するために拡張する方法
+

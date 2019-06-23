@@ -6,3 +6,5 @@
 *.out
 *.tex
 */ltximg/*
+*.pygstyle
+*.pygtex

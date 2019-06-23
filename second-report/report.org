@@ -33,9 +33,9 @@
 #+KEYWORDS:
 #+STARTUP: indent overview inlineimages
 * Summary of ''Constraint Solving for Program Verification Theory and Practice by Example"
-  プログラム検証はプログラムの振る舞い(program behavior) の様々な側面から記述される補助アサーション(auxiliary assertions)の構築に依存している。補助アサーションの例としては、帰納的不変量 (inductive invariants)、資源境界(resource bounds)、到達可能なプログラムの状態を特徴づけるための内挿(interpolants for characterizing reachable program states)、プログラムの終了までの実行ステップ数を近似するためのランキング関数 (ranking functions for approximating number of execution steps until program termination)、非終了(non-termination)性を証明するための再帰集合(recurrence sets)などが上げられる。昨今の制約ソルバ(constraint solving tools) はプログラム検証を効率的に自動化することを助ける。この論文では、基本的な計算機(Computer Machinery)として制約ソルバ(constraint solvers)を利用することで上述したような補助アサーションの自動構築のためのアルゴリズムを例とともに示していく。
+  プログラム検証はプログラムの振る舞い(program behavior) の様々な側面から記述される補助アサーション(auxiliary assertions)の構築に依存している。補助アサーションの例としては、帰納的不変式 (inductive invariants)、資源境界(resource bounds)、到達可能なプログラムの状態を特徴づけるための内挿(interpolants for characterizing reachable program states)、プログラムの終了までの実行ステップ数を近似するためのランキング関数 (ranking functions for approximating number of execution steps until program termination)、非終了(non-termination)性を証明するための再帰集合(recurrence sets)などが上げられる。昨今の制約ソルバ(constraint solving tools) はプログラム検証を効率的に自動化することを助ける。この論文では、基本的な計算機(Computer Machinery)として制約ソルバ(constraint solvers)を利用することで上述したような補助アサーションの自動構築のためのアルゴリズムを例とともに示していく。
   
-  プログラム検証では一般に制約ベースのアルゴリズムを用いられてきた。このアルゴリズムは2つの主要なステップに分かれており、第一ステップは制約を生成するステップで、関心のあるプログラムの特性を制約の集合として定式化し、第二ステップではそれらの制約を解決するステップとなっている。一般的に第二ステップは制約ソルバ手続きの分離(separation of constraint solving procedure)を用いて実行されている。これによって、問題ごとに専用のプログラム検証ツールを作ることなく、既存の制約ソルバを用いることができる。この論文では、ランキング関数、内挿、不変量、資源境界、再起集合を生成することで制約を用いてプログラムの(非)終了性、安全性を証明する方法を例を用いて示していく。
+  プログラム検証では一般に制約ベースのアルゴリズムを用いられてきた。このアルゴリズムは2つの主要なステップに分かれており、第一ステップは制約を生成するステップで、関心のあるプログラムの特性を制約の集合として定式化し、第二ステップではそれらの制約を解決するステップとなっている。一般的に第二ステップは制約ソルバ手続きの分離(separation of constraint solving procedure)を用いて実行されている。これによって、問題ごとに専用のプログラム検証ツールを作ることなく、既存の制約ソルバを用いることができる。この論文では、ランキング関数、内挿、不変式、資源境界、再起集合を生成することで制約を用いてプログラムの(非)終了性、安全性を証明する方法を例を用いて示していく。
 
   この論文で例として用いられているプログラムと、そのcontrol-flowグラフ、そして対応遷移関係(corresponding transition relations)を引用する。
   #+ATTR_LATEX: :width 10cm
@@ -57,7 +57,7 @@
   \rho_2 \rightarrow (& f_x x + f_y y \geq \delta_0 \land \nonumber \\
   & f_x x' + f_y y' \geq f_x x + f_y y - \delta& )
   \end{eqnarray}
-  つまり $f_x, f_y, \delta_0, \delta$ にある満足な割当を行うことで、この loop 関数の線形ランキング関数を決定できる。制約条件 (1) は、$x, y, x', y'$ への普遍的な定量化 $\forall$ を含み、それは既存の制約ソルバを用いた解決を困難にしている。よって $\forall$ を排除するために以下の手続きを踏んでいく。
+  つまり $f_x, f_y, \delta_0, \delta$ にある充足可能な割当を行うことで、この loop 関数の線形ランキング関数を決定できる。制約条件 (1) は、$x, y, x', y'$ への普遍的な定量化 $\forall$ を含み、それは既存の制約ソルバを用いた解決を困難にしている。よって $\forall$ を排除するために以下の手続きを踏んでいく。
   
   まず制約生成のために遷移関係を行列形式に落とし込む。尚このために等式を不等式の形に変形している。
   \begin{eqnarray*}
@@ -92,7 +92,7 @@ f_x x' + f_y y' \leq f_x x + f_y y - \delta =  \begin{pmatrix}-f_x & -f_y & f_x 
   \begin{eqnarray*}
   \exists x : A x \leq b \rightarrow ((\forall x : Ax \leq b \rightarrow cx \leq \gamma) \leftrightarrow (\exists \lambda : \lambda \geq 0 \land \lambda A = c \land \lambda b \leq \gamma))
   \end{eqnarray*}
-  Farkas の補題より、ある満足した $x$ についての式(左辺)から以下の実質等値な関係(右辺)を導き出すことができ($c=0,  \gamma = -1$)、これを (1)  に適用することで (2) のような $\forall$ を排除した制約を得ることができる。
+  Farkas の補題より、ある充足可能な $x$ についての式(左辺)から以下の実質等値な関係(右辺)を導き出すことができ($c=0,  \gamma = -1$)、これを (1)  に適用することで (2) のような $\forall$ を排除した制約を得ることができる。
   \begin{eqnarray*}
   (\forall x : \lnot (A x \leq b)) \leftrightarrow (\exists \lambda : \lambda \leq 0 \land \lambda A = 0 \land \lambda b \leq -1)
   \end{eqnarray*}
@@ -134,14 +134,15 @@ f_x x' + f_y y' \leq f_x x + f_y y - \delta =  \begin{pmatrix}-f_x & -f_y & f_x 
 (3) へFarkas の補題を適用すると $\exists$ のみの式 ((2) と参照)として再構築することができる。
 \begin{eqnarray}
   \exists f \exists \delta_0 \exists \delta &&\nonumber \\ 
-  \exists \lambda \exists \mu &:& \nonumber \\
+  \exists \lambda \exists \mu :&& \nonumber \\
   \delta &\geq& 1 \land \nonumber \\
     \lambda &\geq& 0 \land \mu \geq 0 \land \nonumber \\
     \lambda R  &=& \begin{pmatrix} -f & 0\end{pmatrix} \land \lambda r \leq - \delta_0\nonumber \\
 \mu R &=& \begin{pmatrix} -f & f\end{pmatrix} \land \mu r \leq - \delta 
 \end{eqnarray} 
 
-* (制約付き)線形内挿の計算手法 (how to compute (Constrained) linear interpolants)
+* (制約付き)線形内挿の計算手法 (how to compute (Constrained) linear interpolant
+s)
   内挿(Interpolants) はある望ましい性質を持つプログラムの状態とその性質に違反するプログラムの状態と区別することができるプログラムの状態に関する論理的なアサーションである。
   
   内挿はプログラムの状態の集合を自動的に抽象化する際に重要な役割を担っており、プログラム検証ツールにとって非常に重要な構成要素である。以下に線形内挿の計算手法についてのアルゴリズムをFigure 1.  の例を用いて示す。この特徴として、追加の制約を用いることで結果にバイアスをかけられるという点を挙げることができる。
@@ -153,7 +154,7 @@ f_x x' + f_y y' \leq f_x x + f_y y - \delta =  \begin{pmatrix}-f_x & -f_y & f_x 
   
   \begin{eqnarray}
   \exists i_x \exists i_y \exists i_z \exists i_0 && \nonumber \\
-  \forall x \forall y \forall z &:& \nonumber \\
+  \forall x \forall y \forall z :&& \nonumber \\
   ((y\geq z \land x\geq y )&\rightarrow& i_x x + i_y y + i_z z \leq i_0) \land \nonumber \\
   ((i_x x + i_y y + i_z z \leq i_0 \land x +1 \leq z ) &\rightarrow& 0 \leq -1)) 
   \end{eqnarray}
@@ -169,12 +170,12 @@ f_x x' + f_y y' \leq f_x x + f_y y - \delta =  \begin{pmatrix}-f_x & -f_y & f_x 
   [[線形ランキング関数(linear ranking functions)]] と同様に (5) の $\forall$ をなくすため Farkas の補題を適用すると以下の形になる。
   \begin{eqnarray}
   \exists i_x \exists i_y \exists i_z \exists i_0 && \nonumber \\
-  \exists \lambda \exists \mu &:& \nonumber \\
+  \exists \lambda \exists \mu :&& \nonumber \\
   \lambda \geq 0 \land \mu \geq 0 &\land & \nonumber \\
  \begin{pmatrix}\lambda & \mu\end{pmatrix}\begin{pmatrix}0 & -1 & 1 \\ -1 & 1 & 0 \\ 1 & 0 & -1\end{pmatrix} = 0 &\land& \begin{pmatrix}\lambda & \mu\end{pmatrix} \begin{pmatrix}0 \\ 0 \\ -1\end{pmatrix} \leq -1 \land \nonumber \\
   \begin{pmatrix}i_x & i_y & i_z \end{pmatrix}   &=& \lambda \begin{pmatrix}0 & -1 & 1 \\ -1 & 1 & 0 \end{pmatrix} \land i_0 = \lambda \begin{pmatrix}0 \\ 0\end{pmatrix}
   \end{eqnarray}
-  ただし $\lambda$ と $\mu$ は線型結合を表しており、満足しない不等式 $0 \leq -1$ を導出するための線形結合を表している。 $\lambda$ は上から2つの不等式に追従しており、 $\mu$ は3つ目の不等式に追従している。
+  ただし $\lambda$ と $\mu$ は線型結合を表しており、充足不可能な不等式 $0 \leq -1$ を導出するための線形結合を表している。 $\lambda$ は上から2つの不等式に追従しており、 $\mu$ は3つ目の不等式に追従している。
   
   これを後述のアルゴリズムを用いて解くと以下のようになる。
   \begin{eqnarray*}
@@ -188,18 +189,18 @@ f_x x' + f_y y' \leq f_x x + f_y y - \delta =  \begin{pmatrix}-f_x & -f_y & f_x 
   
 これによって内挿は $-x + z \leq 0$ であることがわかる。
 
-本アルゴリズムでは、2つの線形不等式、 $Av \leq a$ と $Bv \leq b$ の集合を引数に取る。これらの不等式は互いに満足することがなく、以下の制約を満足する内挿 $iv  \leq i_0$ を計算する。
+本アルゴリズムでは、2つの線形不等式、 $Av \leq a$ と $Bv \leq b$ の集合を引数に取る。これらの不等式は互いに充塞可能になることがなく、以下の制約を充足可能にする内挿 $iv  \leq i_0$ を計算する。
 
 \begin{eqnarray}
   \exists i \exists i_0 && \nonumber \\
-  \forall v &:& \nonumber \\
+  \forall v :&& \nonumber \\
   &&(A v \leq a \rightarrow iv \leq i_0) \land \nonumber \\
   &&((iv \leq i_0 \land Bv \leq b) \rightarrow 0 \leq -1)
 \end{eqnarray}
 この式へ Farkas の補題を適用することで $\exists$  の自由変数のみの式へ変形する。
 \begin{eqnarray}
   \exists i \exists i_0 && \nonumber \\
-  \exists \lambda \exists \mu &:& \nonumber \\
+  \exists \lambda \exists \mu :&& \nonumber \\
   && \lambda \geq  0 \land \mu \geq 0 \land \nonumber \\
   && \begin{pmatrix}\lambda & \mu\end{pmatrix} \begin{pmatrix}A \\ B \end{pmatrix} =0 \land \begin{pmatrix}\lambda & \mu\end{pmatrix}\begin{pmatrix}a \\ b\end{pmatrix} \leq -1 \land \nonumber \\
   && i = \lambda A \land i_0 = \lambda a 
@@ -207,26 +208,234 @@ f_x x' + f_y y' \leq f_x x + f_y y - \delta =  \begin{pmatrix}-f_x & -f_y & f_x 
 
 内挿を計算するための制約ベースのアプローチは、追加の制約を使って結果の内挿をバイアスするためのユニークな機会が得られる。実際 (6) はバイアス条件を符号化する追加の制約 $C(i, i_0) \leq c$  で拡張することができた。
 
-* 線形不変量生成(linear invariants generation) とプログラムテストケースを活用する最適化手法
-不変量はプログラムの実行中にその値が変わらない自由変数のアサーションである。プログラム検証では、不変料はプログラムの到達可能な状態を記述するために用いられ、プログラムの正確さについて推論するために必要なツールである。以降では、不変量がプログラム中のエラー箇所の非到達性を向上させることが制約ベースの技術を使って計算することができることや、制約生成タスクの結果を簡略化させるためのテストベースのアプローチが示される。更に不変量と境界生成の密接な関わりについても簡潔に示す。
+* 線形不変式生成(linear invariants generation) とプログラムテストケースを活用する最適化手法
+不変式はプログラムの実行中にその値が変わらない自由変数のアサーションである。プログラム検証では、不変式はプログラムの到達可能な状態を記述するために用いられ、プログラムの正確さについて推論するために必要なツールである。以降では不変式がプログラム中のエラー箇所の非到達性を向上させることが制約ベースの技術を使って計算することができることや、制約生成タスクの結果を簡略化させるためのテストベースのアプローチが示される。更に不変式と境界生成の密接な関わりについても簡潔に示す。
 
-Figure 1. を用いて不変量生成の例を示し、エラー箇所を示す $l_5$ への非到達性を証明する不変量の制約を行う。
+Figure 1. を用いて不変式生成の例を示し、エラー箇所を示す $\ell_5$ への非到達性を証明する不変式の制約を行う。
 
-目標として、$l_2$ と $l_3$ それぞれついての2つの線形不等式  $p_x x + p_y y + p_z z  \leq p_0$ と $q_x x + q_y  y + q_z z \leq q_0$ を解くことを設定する。これらの不等式は、(1)それぞれの箇所でのすべてのプログラムの到達可能な状態を示せる、(2) (1) を証明するための帰納仮説を提供できる、(3) すべてのプログラムの実行がエラー箇所である $l_5$ へ到達しないことを示せるように求められます。まず未知の不変量係数で (1-3)の制約を表すと以下のようになる。
+目標として、$\ell_2$ と $\ell_3$ それぞれついての2つの線形不等式  $p_x x + p_y y + p_z z  \leq p_0$ と $q_x x + q_y  y + q_z z \leq q_0$ を解くことを設定する。これらの不等式は、(1)それぞれの箇所でのすべてのプログラムの到達可能な状態を示せる、(2) (1) を証明するための帰納仮説を提供できる、(3) すべてのプログラムの実行がエラー箇所である $\ell_5$ へ到達しないことを示せるように求められます。まず未知の不変式の係数を用いて (1-3)の制約を表すと以下のようになる。
 \begin{eqnarray}
 \exists p_x \exists p_y \exists p_z \exists p_0 \exists q_x \exists q_zy \exists q_z \exists q_0 && \nonumber \\
- \forall x \forall y \forall z \forall x' \forall y' \forall z' &:& \nonumber \\
+ \forall x \forall y \forall z \forall x' \forall y' \forall z' :&& \nonumber \\
  (\rho_1 &\rightarrow& p_x x' + p_ y y' + p_z z' \leq p_0) \land \nonumber \\
  ((p_x x + p_y y + p_z z \leq p_0 \land \rho_2) &\rightarrow& p_x x' + p_y y' + p_z z' \leq p_0) \land \nonumber \\
 ((p_x x + p_y y +p_z z \leq p_0 \land \rho_3) &\rightarrow& q_x x' + q_y y' + q_z z' \leq q_0)  \land \nonumber \\
 ((q_x x + q_y y + q_z z \leq p_0 \land \rho_4) &\rightarrow& 0\leq 0 ) \land \nonumber \\
-((q_x x + q_y y + q_z z \leq p_0 \land \rho_5) &\rightarrow& 0 \leq -1)
+((q_x x + q_y y + q_z z \leq p_0 \land \rho_5) &\rightarrow& 0 \leq -1)       
 \end{eqnarray}
 
+上式にはそれぞれのプログラムでの遷移ごとに、この制約に対応する連言が含まれている。例えば1つ目の連言は、任意の状態へ $\tau_1$ が適用されたならば必ず $p_x x + p_y y + p_z z \leq p_0$ で表される状態へ向かうことを保証している。
 
+それぞれの遷移関係 $\rho_1, \dots, \rho_5$ を行列形式 $R_1 \begin{pmatrix}v \\ v'\end{pmatrix} \leq r_1 , \dots, R_5 \begin{pmatrix}v \\ v'\end{pmatrix} \leq r_5$ として表し、$v, v'$ はプログラムの自由変数 $x, y, z$ と $x', y', z'$ のベクトルを表す。 (9) へ Farkas の補題を適用して $\forall$ を除去すると、以下の制約を得る。
+\begin{eqnarray}
+\exists p_x \exists p_y \exists p_z \exists p_0 \exists q_x \exists q_y \exists q_z \exists q_0 && \nonumber \\
+\exists \lambda_1 \exists \lambda_2 \exists \lambda_3 \exists \lambda_4 \exists \lambda_5 :&& \nonumber \\
+\lambda_1 \geq 0 \land \cdots \land \lambda_5 \geq 0 &\land& \nonumber \\
+ \lambda_1 R_1 &=& \begin{pmatrix}0 & p_x & p_y & p_z \end{pmatrix}\land \lambda_1 r_1 \leq p_0 \land \nonumber \\
+  \lambda_2 \begin{pmatrix}p_x & p_y & p_z & 0 \\ \multicolumn{4}{c}{R_2}\end{pmatrix} &=& \begin{pmatrix}0 & p_x & p_y & p_z \end{pmatrix} \land \lambda_2 \begin{pmatrix}p_0 \\ r_2\end{pmatrix} \leq p_0 \land \nonumber \\
+\lambda_3 \begin{pmatrix}p_x & p_y & p_z & 0 \\ \multicolumn{4}{c}{R_3}\end{pmatrix} &=& \begin{pmatrix}0 & p_x & p_y & p_z \end{pmatrix} \land \lambda_3 \begin{pmatrix}p_0 \\ r_3 \end{pmatrix} \leq q_0 \land \nonumber \\
+\lambda_4 \begin{pmatrix}q_x & q_y & q_z & 0 \\ \multicolumn{4}{c}{R_4}\end{pmatrix} &=& 0 \land \lambda_4 \begin{pmatrix}q_0 \\ r_4 \end{pmatrix} \leq 0 \land \nonumber \\
+\lambda_5 \begin{pmatrix}q_x & q_y & q_z & 0 \\ \multicolumn{4}{c}{R_5}\end{pmatrix} &=& 0 \land \lambda_5 \begin{pmatrix}p_0 \\ r_5\end{pmatrix} \leq -1 \land
+\end{eqnarray}
 
+しかしこの制約は未知の要素 $\lambda_1 , \dots , \lambda_5$ と $p_x, p_y, p_z, p_0, q_x, q_y, q_z, q_0$ の乗算を含んでいるので非線形なものとなっている。このため追加の非線形項を減らし、残っている未知係数についての分析を行い制約をわかりやすくするステップを導入する。
+
+(10) を解くことで以下の結果を得る。
+\begin{eqnarray*}
+  \lambda_1 &=& \begin{pmatrix}1 & 1 & 1 & 1\end{pmatrix} \nonumber \\
+  \lambda_2 &=& \begin{pmatrix}1 & 0 & 1 & 1 & 1\end{pmatrix} \nonumber \\
+  \lambda_3 &=& \begin{pmatrix}1 & 1 & 1 & 1 & 1\end{pmatrix} \nonumber \\
+\lambda_4 &=& \begin{pmatrix}0 & 0 & 0 & 0 & 0\end{pmatrix} \nonumber \\
+\lambda_5 &=& \begin{pmatrix}1 & 1 & 0 & 0 & 0\end{pmatrix} \nonumber \\
+          p_x = 0\ p_y &=& -1\ p_z = 1\ p_0 = 0 \nonumber \\
+          q_x = -1\ q_y &=& 0\ q_z = 1\ q_0 = 1 \nonumber
+\end{eqnarray*}
+
+これによって、 $\ell_2$ における不変式 $-y + x \leq 0$  と $\ell_3$ における不変式 $-x + z \leq 0$ を得る。
+
+まず1つ目の入力として、データ変数 $v$ と プログラムカウンター $pc$ 、遷移に関する無限集合 $\mathcal{T}$ 、開始位置 $\ell_{\mathcal{I}}$ 、エラー箇所 $\ell_{\mathcal{E}}\in \mathcal{L}$ を含む入力プログラム $P = (v, pc, \mathcal{L}, \mathcal{T}, \ell_{\mathcal{I}}, \ell_{\mathcal{E}})$ を定義する。それぞれの遷移を表す $(l, \rho(v, v'), l') \in \mathcal{T}$ には開始位置 $l$ と 遷移関係 $\rho(v, v')$ 、目的先 $l'$ が含まれている。2つ目の入力は、未知係数 $I_\ell$ と $i_\ell$ を含むプログラムの自由変数についての線形不等式 $I_\ell v \leq i_\ell$ の集合をそれぞれの control location $l$ へ割り当てるテンプレートマップである。これらを用いて次の制約を満たすような係数を見つけるための式へ書き換える。
+
+\begin{eqnarray}
+\exists I_{\ell\in\mathcal{L}} \exists i_{\ell\in\mathcal{L}} && \nonumber \\
+ \forall v \forall v' :&& \nonumber \\
+ (I_{\ell_\mathcal{I}} = 0 \land i_{\ell_\mathcal{I}} = 0)  &\land& (I_{\ell_{\mathcal{E}}} \land i_{\ell_{\mathcal{E}}} = -1) \land \nonumber \\
+ (\forall (\ell, \rho(v, v'), l') \in \mathcal{T} :&& \nonumber \\
+(I_{l}v \leq i_\ell \land \rho(v, v')) &\rightarrow& I_{l'} v' \leq i_{l'})
+\end{eqnarray}
+
+まずこの制約によってテンプレート $I_{\ell_{\mathcal{I}}} v \leq i_{\ell_{\mathcal{I}}}$ よって課される開始位置 $\ell_0$ に制限がないことが保証されている。そして制約はどの実行もエラー箇所に到達しないことが必要とされる。例えば対応するテンプレート $I_{\ell_{\mathcal{E}}}v \leq i_{\ell_\mathcal{E}}$ は満たされない不等式の集合を生み出す。それぞれのプログラムの遷移については、制約はこの遷移を取ることによって到達可能な状態の集合がそれぞれの不等式の集合の元にあることが要求される。
+
+Farkas の補題を用いて $\forall$ を除去すると以下に変形できる。
+\begin{eqnarray}
+\exists I_{l\in \mathcal{L}} \exists i_{l\in\mathcal{L}}&& \nonumber \\
+\exists \Lambda_{\tau \in \mathcal{T}} :&& \nonumber \\
+(I_{\ell_\mathcal{I}} = 0 \land i_{\ell_{\mathcal{I}}} = 0)  & \land & (I_{\ell_{\mathcal{E}}} = 0 \land i_{\ell_{\mathcal{E}}} = -1 )\land \nonumber \\
+(\forall \tau = (\ell, R \begin{pmatrix}v\\ v'\end{pmatrix} \leq r, \ell') &\in& \mathcal{T} : \nonumber \\
+& & \Lambda_{\tau} \geq 0 \land \nonumber \\
+& & \Lambda \begin{pmatrix}I_\ell & 0\\ \multicolumn{2}{c}{R}\end{pmatrix} = I_{\ell '} \land \Lambda_{\tau} \begin{pmatrix}i_\ell \\ r\end{pmatrix} \leq i_{\ell'})
+\end{eqnarray}
+
+$\Lambda$ と $I_\ell$ 、 $\Lambda$ と $i_\ell$ の乗算に非線形性が見られ、理論上では(10) の非線形制約は有理数/実数上の Quantifier elimination の手続きによって解決することができるとされているが、実用上ではこの直接的なアプローチは容易に困難になりやすい。このため様々にある非線形項の量を減らす技術の一つである、プログラムテストを用いた手法を適用する。
+
+以下の一連のプログラムの状態について議論する。これらは到達可能な状態であり、すべてのプログラムの不変式はこの状態を含んでいることが推論できる。
+\begin{eqnarray*}
+s_1 = (\ell_1, x = 1, y = 2, z = 1)  \\
+s_2 = (\ell_2, x = 2, y = 2, x = 1) \\
+s_3 = (\ell_2, x = 2, y = 2, z = 1) \\
+s_4 = (\ell_3, x = 2, y =2, z = 1)  \\
+s_5 = (\ell_4, x = 2, y = 2, z=1) 
+\end{eqnarray*}
+ $\ell_2$ と  $\ell_3$ に関する不変式のテンプレートについてそれぞれ考えると、以下の制約が得られる。
+\begin{eqnarray*}
+\varphi_1 = (p_x 1 + p_y 2 + p_z 1 \leq p_0)  \\
+\varphi_2 = (p_x 2 + p_y 2 + p_z 1 \leq p_0)  \\
+\varphi_3 = (q_x 2 + q_y 2 + q_z 1 \leq q_0)
+\end{eqnarray*}
+これらの連言、つまり $\varphi_1 \land \varphi_2 \land \varphi_3$ を取ると次の式が得られる。これを解集合をそのままに (10) へ追加の強化として加えると、非線形部の単純化を行うことができ、制約解決効率を向上させることができる。
+\begin{eqnarray*}
+p_x 1 + p_y 2 + p_z 1 \leq p_0 \land p_x 2 + p_y 2 + p_z 1 \leq p_0 \land q_x 2 + q_y 2 + q_z 1 \leq q_0
+\end{eqnarray*}
+
+ $S$ をプログラムの到達可能な状態を表す無限集合であるとして、次の制約を解集合をそのままに (12) へ加える。
+
+ 次に未知アサーションとしての境界生成を行う。
+ 
+ プログラム実行によってメモリや実行時間などの様々な資源を消費する。資源境界は資源消費量を見積もるために有用な論理的なアサーションであり、特に限られたリソースの可用性しかないプログラム実行環境においてこの自動生成は重要である。またこの資源境界を求めることとプログラム状態の到達可能性を求めることには強いつながりがある。言い換えると与えられた境界内ですべてのプログラムの実行が成立するのかのチェックを、資源消費を追跡するプログラムの補助自由変数に対するアサーションとみなすことができる。以降の例では、 $x$ を用いて実行時間の経過を追跡し、 $z$ の値でこれの下限を求める。
+ 
+ 未知の資源境界は、生成された制約にわすかな修正を加えた後、上述の不変式生成アルゴリズムを使用して合成することができる。
+ 以降に制約 (9) と (10) を、遷移関係 $\rho_4$ $\rho_5$ によって表されるアサーションの状態の仮定の元で loop 回数の境界を特定することで修正する方法を示す。
+ 
+ まず未知境界のアサーションを以下の不等式で示す。この式はその境界範囲の妥当性を証明する不変式とともに係数 $b_y, b_z , b_0$ の値を求めることを目的とする。
+ \begin{eqnarray*}
+x \leq b_y y + b_z z + b_0
+\end{eqnarray*}
+次に(9) の最後の2つの連言を置き換えることで、この目的を制約に落とし込む。この式は loop の出口を出た後の時点のプログラムの不変式が境界の妥当性を含意していることを必要とする。
+\begin{eqnarray*}
+  q_x x + q_y y + q_z z \leq q_0 \rightarrow x \leq b_y y + b_z z + b_0
+\end{eqnarray*}
+
+修正された制約から $\forall$ を除去し、これを解くことで $x$ に対する境界が存在していないことがわかる。よって次の仮定の状態を加えた修正されたプログラムを提案する。
+#+BEGIN_SRC c
+assume(z >= x);
+#+END_SRC
+この修正されたプログラムを用いることで以下の境界を得ることができる。
+\begin{eqnarray*}
+  x \leq y
+\end{eqnarray*}
 
 * プログラムの非終了性判定(とそのための再帰集合の構築)法
+既存のプログラムの終了性を証明するためのツールにある固有の制限は、非決定的な結果が報告されるケースを引き起こす。終了することができる引数がツールによって見つからなかったからと言って特定の入力に対して終了しないと言い切れるわけではないので、プログラムの非終了性を判定するための手法が必要となる。以降では非終了なプログラムの実行の存在を証明することができる再帰集合の概念を用いてこれを解決する。
 
+ここでは Figure 2. を例にとる。以下に論文中のそれを引用する。尚このプログラムには値のオーバーフローが存在しないものとする。
+#+ATTR_LATEX: :width 10cm
+#+CAPTION: Fig. 2. Constraint Solving for Program Verification Theory and Practice by Example より引用
+[[./Fig2.png]]
+
+非終了性を証明するために loop の開始地点へ到達し、次の loop へ向かう可能性があるプログラムの状態で構成される再帰集合を計算する。理想的な再帰集合は、プログラムの自由変数 $x, y, z$ からなるベクトル $v$ と未知係数 $p, p_0, q, q_0$ からなる2つの不等式の連言 $pv \leq p_0 \land qv \leq q_0 = S v \leq s$ によって表現されると仮定すると以下の制約が書ける。
+\begin{eqnarray}
+\exists S \exists s :&& \nonumber \\
+        (\exists v \exists v' &&: \rho_1 (v,v') \land Sv' \leq s) \land \nonumber \\
+        (\forall v \exists v' &&: Sv \leq s \rightarrow (\rho_2 (v, v') \land Sv' \leq s))
+\end{eqnarray}
+
+1つ目の連言は、再帰集合が空集合でないことと、再帰集合が遷移 $\tau_1$ によって到達可能な状態を少なくとも1つは持っていることを保証する。2つ目の連言は再帰集合内のすべての状態が遷移 $\tau_2$ に従うことと再帰が再帰集合内で閉じていることを保証する。またこれらの性質が保証されると同時に、再帰集合の要素によって構築される無限回実行されるプログラムの実行があることが保証されている。
+
+(13) 式より $\forall$ を除去する前に、遷移関係 $\rho_1(v, v')$ と $\rho_2(v, v')$ の展開を行う。これによって $'$ を除去することができる。
+\begin{eqnarray*}
+\exists S \exists s :&&  \\
+(\exists x \exists y \exists z &&: y \leq z \land S \begin{pmatrix}x \\ y \\ z\end{pmatrix} \leq s ) \land   \\
+(\forall x \forall y \forall z &&: S \begin{pmatrix}x \\ y \\z\end{pmatrix} \leq s \rightarrow (x + 1 \leq y \land S \begin{pmatrix}x + 1 + z \\ y \\ z\end{pmatrix} \leq s)) 
+\end{eqnarray*}
+次に Farkas の補題を用いて $\forall$ を除去する。 尚 $S_x, S_y, S_z$ はそれぞれ $S$ の 1列目、2列目、3列目を表す。
+\begin{eqnarray}
+  \exists S \exists s :&& \nonumber \\
+  (\exists x \exists y \exists z  &&: y \geq z \land S \begin{pmatrix}x \\ y \\z\end{pmatrix}\leq s) \land \nonumber \\
+  (\exists \lambda &&: \lambda \geq 0 \land \lambda S = \begin{pmatrix}1 & -1&  0\end{pmatrix} \land \lambda s \leq -1) \land \nonumber \\
+(\exists \Lambda &&: \Lambda \geq 0 \land \Lambda S = \begin{pmatrix}S_x& S_y&S_z + S_x\end{pmatrix} \land \Lambda s \leq (s-  S_x))  
+\end{eqnarray}
+
+(14) にも非線形な制約が存在しているため、不変式生成で用いた技術を同様に適用すると、結果として以下の解が得られる。
+\begin{eqnarray*}
+  x &=& -2 \\
+  y &=& -1 \\ z&=& -1 \\ \lambda &=& \begin{pmatrix}1 & 0\end{pmatrix} \\ \Lambda &=& \begin{pmatrix}1 & 0 \\ 1 & 1\end{pmatrix} \\ p &=& \begin{pmatrix}1 & -1 & 0\end{pmatrix} \\ p_0 &=& -1 \\ q &=& \begin{pmatrix}0 & 0 & 1\end{pmatrix} \\ q_0 &=& -1
+\end{eqnarray*}
+
+上記の解によって以下の再帰集合が得られる。
+\begin{eqnarray*}
+x- y \leq -1 \land z \leq -1
+\end{eqnarray*}
+またプログラムが終了しない自由変数の割当が $x = -2, y = -1, z = -1$ であることもわかる。
 * 線形アサーション合成のための制約ベースのアルゴリズムの、線形算術関数と未解釈関数の組み合わせを処理するために拡張する方法
+本章では例えば複雑すぎる関数に代表されるような未解釈関数を線形演算と組み合わせて補助アサーションを生成するための手法を示す。この拡張の基礎は論理理論の組み合わせによる階層的なアプローチである。以下小規模な例を用いて線形演算と関数シンボルの内挿アルゴリズムを示す。
+
+互いに満たされることのない2つのアサーション $\varphi$ と$\psi$ について内挿アルゴリズムを考える。
+\begin{eqnarray*}
+  \varphi = (x \leq a \land a \leq y \land f(a) \leq 0) \\
+  \psi = (y \leq b \land b \leq x \land 1 \leq f(b)) 
+\end{eqnarray*}
+充足不可能性の証明には、線形演算の関数(LI, linear arithmetic function)と未解釈の関数 (UIF, uninterpreted function)についての推論が必要であり、それらは論理的帰結関係 $\vDash_{LI+UIF}$ によって示される。
+\begin{eqnarray*}
+\varphi \land \psi \vDash_{LI+UIF} \bot
+\end{eqnarray*}
+この内挿アルゴリズムの目的は次のようなアサーション $\mathcal{X}$ を求めることになる。
+\begin{eqnarray}
+&&\varphi \vDash_{LI+UIF} \mathcal{X} \nonumber \\
+&&\mathcal{X} \land \psi \vDash_{LI+UIF} \bot \nonumber \\
+&&\mathcal{X} is \ expressed \ over \ common \ symbols \ of \ \varphi \ and \ \psi
+\end{eqnarray}
+まず以下のように関数の適用から算術制約を分離する生成ステップを行う。
+\begin{eqnarray*}
+\varphi_{LI} &=& (x \leq a \land a \leq y \land c \leq 0) \\
+\psi_{LI}  &=& (y \leq b \land b \leq x \land 1 \leq d) \\
+D &=& \{c \mapsto f(a), d \mapsto f(b)\}  \\
+X &=& \{a=b \rightarrow c = d\}
+\end{eqnarray*}
+不等式 $\varphi$ と $\psi$ においては、関数シンボルを自由変数で置き換えており、その置換を行うために射の集合である $D$ を用いている。集合 $X$ は、関数適用の結果に得られるすべてのペアに対して作成された機能公理インスタンス (functionality axiom instances) を示している。これらの例は線形演算で表現することができる。尚この例では、このようなインスタンスは1つのみとなっている。
+
+階層的な推論アプローチは、以下の式で示されるように、 $X$ に収集されたインスタンスがアサーション  $\varphi_{LI}$ と $\psi_{LI}$ の相互充足不能性について証明するのに充足していることを保証している。
+\begin{eqnarray*}
+\varphi_{LI} \land \psi_{LI} \land \bigwedge X \vDash_{LI} \bot
+\end{eqnarray*}
+_$X$ の公理インスタンスには $\varphi_{LI}$  と $\psi_{LI}$ の両方にある自由変数が含まれているため、上記の充足不可能な連言について線形演算の内挿アルゴリズムを適用することができず、結果として (15) の3行目の条件に違反するような内挿の結果を得てしまう。_ (Unfortunately we cannot apply an algorithm for interpolation in linear arithmetic on the unsatisfiable conjunction presented above since the axiom instance in $X$ contains variables that appear both in $\varphi_{LI}$ and $\psi_{LI}$, which will lead to an interpolation result that violates the third condition in (15).) 
+
+代わりに case-based な推論を行う。まず純粋な($X$ を考慮しない)内挿について考えることで内挿を計算することを試みる。しかしこれについては以下のように相互充足性を持ってしまうために成功しない。
+\begin{eqnarray*}
+\varphi_{LI} \land \psi_{LI} \nvDash \bot
+\end{eqnarray*}
+純粋なアサーションの連言は、 $X$ からの機能公理インスタンスを適用するための前提条件を求められる。
+\begin{eqnarray*}
+\varphi_{LI} \land \psi_{LI} \vDash a = b
+\end{eqnarray*}
+これによって $\varphi_{LI}$ と $\psi_{LI}$ の自由変数上で表現できる中間項を導き出すことができる。
+\begin{eqnarray*}
+\varphi_{LI} \land \psi_{LI} &\vDash& a \leq y \land y \leq b \\
+\varphi_{LI} \land \psi_{LI} &\vDash& a \geq x \land x \geq b 
+\end{eqnarray*}
+これらの結果を入れ替えることで次の結論を導き出すことができる。
+\begin{eqnarray*}
+\varphi_{LI} \land \psi_{LI} &\vDash& x \leq a  \land a \leq y \\
+\varphi_{LI} \land \psi_{LI} &\vDash& y \leq b \land b \leq x 
+\end{eqnarray*}
+上式は内挿アルゴリズムによって適切な case の推論を導き出すために用いられる。更に対応する新しい自由変数 $e$ とともに追加の関数適用 $f(y)$ を導入し、集合D に追加する。
+\begin{eqnarray*}
+D = \{c \mapsto f(a), d \mapsto f(b), e \mapsto f(y)\}
+\end{eqnarray*}
+case の推論を行う第一段階として、以下の充足不可能な連言を計算する。
+\begin{eqnarray*}
+(\varphi_{LI}\land a = e) \land (\psi_{LI} \land e = b) \vDash_{LI} \bot
+\end{eqnarray*}
+[[(制約付き)線形内挿の計算手法 (how to compute (Constrained) linear interpolant]] で用いたアルゴリズムを適用することで、以下の式のような部分内挿 $e\leq 0$ を得ることができる。
+\begin{eqnarray*}
+\varphi_{LI} \land a = e &\vDash_{LI}& e \leq 0 \\
+e \leq 0 \land \psi_{LI} \land e  = b &\vDash_{LI}& \bot
+\end{eqnarray*}
+さらに以下のように case 推論の情報を使って部分内挿を完成させることができる。
+\begin{eqnarray*}
+\mathcal{X}_{LI}  = (x \neq y \lor (x = y \land e \leq 0))
+\end{eqnarray*}
+対応する関数適用を新たな自由変数に置き換えた後、元の入力である $\varphi$ と $\psi$ の内挿 $\mathcal{X}$ を得る。
+\begin{eqnarray*}
+\mathcal{X} &=& (x \neq y \lor (x = y \land e \leq 0))[f(q)/e] \\
+&=& x \neq y \lor (x = y \land f(q) \leq 0)
+\end{eqnarray*}
 
